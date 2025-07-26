@@ -1,18 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% load allauth account %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'account/login.css' %}">
 {% endblock head %}
 
-{% block content %}
+{% block login %}
 <main class="form-signin">
-    
   <form method="post" action='{{login_url}}'>
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
     {% csrf_token %}
-
     <div class="form-floating">
       <input type="email" name="login" autocomplete="email" class="form-control" id="floatingInput" placeholder="Email address">
       <label for="floatingInput">Email address</label>
@@ -31,4 +28,4 @@
     <p class="mt-5 mb-3 text-muted">If you don't have account please <a href="{{ signup_url }}">Sign up</a></p>
   </form>
 </main>
-{% endblock content %}
+{% endblock login %}
