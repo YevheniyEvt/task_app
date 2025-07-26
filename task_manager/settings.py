@@ -71,7 +71,10 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
+LOGIN_REDIRECT_URL = "projects:projects_list"
+
 ROOT_URLCONF = 'task_manager.urls'
+LOGOUT_REDIRECT_URL = 'account_login'
 
 TEMPLATES = [
     {
@@ -131,7 +134,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
