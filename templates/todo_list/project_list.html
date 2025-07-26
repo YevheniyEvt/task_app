@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{%block projects_list%}
+<h2>Lists projects</h2>
+<div>
+    {% for project in projects %}
+        <h1>{{project.name}}</h1>
+
+        {% include 'todo_list/task_form.html' with project_id=project.id %}
+
+        {% for task in project.tasks.all %}
+            <h4>{{task.content}}</h4>
+        {% endfor %}
+
+    {% endfor %}
+</div>
+
+{%endblock%}

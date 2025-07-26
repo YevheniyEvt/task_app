@@ -16,8 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import TemplateView
+
+from allauth.account.decorators import secure_admin_login
+
+admin.autodiscover()
+admin.site.login = secure_admin_login(admin.site.login)
 
 urlpatterns = [
+    path("", TemplateView.as_view(template_name="base.html")),
     path('admin/', admin.site.urls),
+
     path('accounts/', include('allauth.urls')),
+    path('projects/', include('todo_list.urls')),
 ]

@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-pv#bx8s2&+yd3w!x9ptk8trig2l40in9h13q-@lt9itu*#lp0=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    "django_extensions",
     'allauth',
     'allauth.account',
 
