@@ -30,6 +30,12 @@ class ProjectListViewTestCase(TestCase):
         response = self.client.get(reverse('projects:projects_list'))
         self.assertEqual(response.status_code, 200)
         self.assertQuerySetEqual(response.context['projects'], self.users_projects)
+        self.assertTemplateUsed(response, 'todo_list/project_list.html')
+        self.assertTemplateUsed(response, 'base.html')
+        self.assertTemplateUsed(response, 'navbar.html')
+        self.assertTemplateUsed(response, 'todo_list/project_form.html')
+        self.assertTemplateUsed(response, 'todo_list/task_form.html')
+        
 
     def test_projects_context(self):
         self.client.force_login(self.user)
@@ -79,6 +85,7 @@ class ProjectCreateViewTestCase(TestCase):
         self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
         self.assertEqual(1, Project.objects.filter(name='').count())
     
+    
     def test_create_new_empty_project_empty_already_exist(self):
         self.client.force_login(self.user)
         response = self.client.post(
@@ -87,6 +94,7 @@ class ProjectCreateViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
         self.assertIsNotNone(Project.objects.filter(name='').first())
+        
 
 class ProjectUpdateViewTestCase(TestCase):
     """Test update project"""

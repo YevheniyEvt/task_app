@@ -6,32 +6,16 @@
 {% endblock head %}
     
 {% block projects_list %}
-
 {% include 'navbar.html' %}
-
-<main class="container ">
-{% for project in projects %}
-  {% if project.name == ''  %}
-  {% include 'todo_list/empty_project_form.html' with project=project %}
-  {% else %}
-  {% include 'todo_list/project_form.html' with project=project %}
-  {% include 'todo_list/task_form.html' with project_id=project.id %}
-  {% endif %}
-
-
-
-  <div class="p-3 bg-body rounded-top custom-rounded shadow-sm">
-  {% for task in project.tasks.all %}
-    {% include 'todo_list/task_list.html' with task=task %}
+<main class="container" >
+  {% for project in projects %}
+    {% include 'todo_list/project.html' with project=project %}
   {% endfor %}
 
-  </div>
-  
-{% endfor %}
-</main>
-
-<div class="d-flex justify-content-center my-5">
-  <form action="{% url 'projects:projects_create' %}" method="post">
+<div class="d-flex justify-content-center my-5" id="new-project">
+  <form hx-get="{% url 'projects:projects_create' %}"
+      hx-target="#new-project"
+      hx-swap="beforebegin">
       {%csrf_token%}
       <button type="submit" class="btn btn-primary rounded-pill px-4  btn-lg">
         <i class="bi bi-plus-circle-dotted fs-4 "></i>
@@ -39,5 +23,5 @@
     </button>
   </form>
 </div>
-        
+</main>
 {%endblock%}
