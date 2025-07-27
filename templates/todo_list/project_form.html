@@ -1,11 +1,21 @@
-{%block projects_create%}
+{% load static %}
 
-<div>
-    <form action="{% url 'projects:projects_create' %}" method="post">
-        {%csrf_token%}
-        {{form}}
-        <button type="submit">Create</button>
-    </form>
+<div class="d-flex justify-content-between p-3 my-5 mb-0 text-white bg-blue  shadow-sm">
+  <div>
+    <h1 class="h3 mb-0 text-white lh-1"><i class="bi bi-calendar2-check fs-3 me-4"></i>{{project.name}}</h1>
+  </div>
+  <div>
+  <form action="{% url 'projects:projects_delete' project.id %}" method="post" class="form-display">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-link p-0 m-0 align-baseline">
+    <i class="bi bi-trash "></i>
+    </button>
+  </form>
+  <form action="" method="post" class="form-display">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-link p-0 m-0 align-baseline">
+    <i class="bi bi-pencil"></i>
+    </button>
+  </form>
+  </div>
 </div>
-
-{%endblock%}

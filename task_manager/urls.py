@@ -29,6 +29,7 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name="projects:projects_list", permanent=False)),
     path('admin/', admin.site.urls),
 
-    path('', include('allauth.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('logout/', RedirectView.as_view(pattern_name="account_logout", permanent=False)),
     path('projects/', include('todo_list.urls')),
 ]
