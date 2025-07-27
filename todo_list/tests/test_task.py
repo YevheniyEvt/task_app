@@ -56,9 +56,9 @@ class TaskCreateViewTestCase(TestCase):
                     ),
             data={"content": "test text"},
             )
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
+        self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(Task.objects.filter(content='test text').first())
+        self.assertTemplateUsed(response, "todo_list/task_list.html")
 
 
 class TaskUpdateViewTestCase(TestCase):
@@ -101,11 +101,99 @@ class TaskUpdateViewTestCase(TestCase):
                                             kwargs={"pk": self.task.id}),
                                             data={"content": "updated text"},
                                             )
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
+        self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(Task.objects.filter(content='updated text').first())
         self.assertIsNone(Task.objects.filter(content=self.task.content).first())
 
+
+class TaskCompletedUpdateViewTestCase(TestCase):
+    """Test update complete task"""
+        
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = create_user(1)
+        project = create_project(1, cls.user)
+        cls.task = create_task(1, project)
+        user2 = create_user(2)
+        project2 = create_project(2, user2)
+        cls.task2 = create_task(2, project2)
+
+    def test_update_task_not_login_user(self):
+        response = self.client.post(reverse('projects:task_completed',
+                                            kwargs={"pk": self.task.id}),
+                                            data={"completed": True},
+                                            )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            f'{reverse('account_login')}?next=/projects/task/completed/{self.task.id}/',
+            target_status_code=200,
+            )
+    
+    def test_update_task_not_owner_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('projects:task_completed',
+                                            kwargs={"pk": self.task2.id}),
+                                            data={"completed": True},
+                                            )
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(self.task2.completed)
+
+    def test_update_task_owner_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('projects:task_completed',
+                                            kwargs={"pk": self.task.id}),
+                                            data={"completed": True},
+                                            )
+        self.assertEqual(response.status_code, 200)
+        self.task.refresh_from_db()
+        self.assertTrue(self.task.completed)
+
+
+class TaskPriorityUpdateViewTestCase(TestCase):
+    """Test update priority task"""
+        
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = create_user(1)
+        project = create_project(1, cls.user)
+        cls.task = create_task(1, project)
+        user2 = create_user(2)
+        project2 = create_project(2, user2)
+        cls.task2 = create_task(2, project2)
+
+    def test_update_task_not_login_user(self):
+        response = self.client.post(reverse('projects:task_priority',
+                                            kwargs={"pk": self.task.id}),
+                                            data={"priority": 1},
+                                            )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            f'{reverse('account_login')}?next=/projects/task/priority/{self.task.id}/',
+            target_status_code=200,
+            )
+    
+    def test_update_task_not_owner_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('projects:task_priority',
+                                            kwargs={"pk": self.task2.id}),
+                                            data={"priority": 1},
+                                            )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.task2.priority, 0)
+
+    def test_update_task_owner_user(self):
+        self.client.force_login(self.user)
+        response = self.client.post(reverse('projects:task_priority',
+                                            kwargs={"pk": self.task.id}),
+                                            data={"priority": 1},
+                                            )
+        self.assertEqual(response.status_code, 200)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.priority, 1)
+        self.assertTemplateUsed(response, 'todo_list/project.html')
+    
 
 class ProjectDeleteViewTestCase(TestCase):
     """Test delete task"""

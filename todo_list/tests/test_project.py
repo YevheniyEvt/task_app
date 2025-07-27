@@ -71,30 +71,15 @@ class ProjectCreateViewTestCase(TestCase):
             reverse('projects:projects_create'),
             data={"name": "test text"},
             )
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
+        self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(Project.objects.filter(name='test text').first())
-
-    def test_create_new_empty_project(self):
-        Project.objects.create(name='', owner=self.user)
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse('projects:projects_create'),
-            )
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
-        self.assertEqual(1, Project.objects.filter(name='').count())
-    
-    
-    def test_create_new_empty_project_empty_already_exist(self):
-        self.client.force_login(self.user)
-        response = self.client.post(
-            reverse('projects:projects_create'),
-            )
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
-        self.assertIsNotNone(Project.objects.filter(name='').first())
+        self.assertTemplateUsed(response, 'todo_list/project.html')
         
+    def test_get_create_project_login_user(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('projects:projects_create'))    
+        self.assertTemplateUsed(response, "partials/empty_project_form.html")
+
 
 class ProjectUpdateViewTestCase(TestCase):
     """Test update project"""
@@ -140,10 +125,10 @@ class ProjectUpdateViewTestCase(TestCase):
                     ),
             data={"name": "updated text"},
             )
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
+        self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(Project.objects.filter(name='updated text').first())
         self.assertIsNone(Project.objects.filter(name=self.project.name).first())
+        self.assertTemplateUsed(response, 'todo_list/project_form.html')
 
 
 class ProjectDeleteViewTestCase(TestCase):
@@ -174,6 +159,5 @@ class ProjectDeleteViewTestCase(TestCase):
     def test_delete_project_owner_user(self):
         self.client.force_login(self.user)
         response = self.client.post(reverse('projects:projects_delete',kwargs={"pk": self.project.id}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
+        self.assertEqual(response.status_code, 200)
         self.assertIsNone(Project.objects.filter(name=self.project.name).first())

@@ -23,8 +23,8 @@ class Task(models.Model):
         on_delete=models.CASCADE,
         )
     content = models.CharField()
-    priority = models.IntegerField(default=0)
-    completed  = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0, blank=True)
+    completed  = models.BooleanField(default=False, blank=True)
     deadline = models.DateField(
         auto_created=True,
         default=(datetime.today() + timedelta(days=1)).date(),
