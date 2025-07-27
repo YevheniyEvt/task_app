@@ -1,11 +1,11 @@
 {% load static %}
 
-<form class="card p-2 bg-grey rounded-0" action="{% url 'projects:task_create' project_id %}" method="post">
+<form class="card p-2 bg-secondary  p-2 text-dark rounded-0" action="{% url 'projects:task_create' project_id %}" method="post">
     {%csrf_token%}
     <div class="input-group">
     <button type="button" class="btn btn-success rounded-circle me-2"><i class="bi bi-plus-circle-fill"></i></button>
-    <input type="text" class="form-control" placeholder="Start typing here to create a task ..." name="content" autocomplete="off" required>
-    <button type="submit" class="btn btn-secondary">Quick task</button>
+    <input type="text" class="form-control " placeholder="Start typing here to create a task ..." name="content" autocomplete="off" required>
+    <button type="submit" class="btn btn-success " >Quick task</button>
     </div>
 </form>
 

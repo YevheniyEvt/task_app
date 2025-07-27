@@ -53,3 +53,10 @@ body {
   color: #fff;
   border-bottom-color: #fff;
 }
+
+.my-custom-gradient {
+    background: linear-gradient(to top, #b37709, #f0dfa7);
+}
+/* .my-custom-gradient {
+    background: linear-gradient(to top, #ff7e5f, #feb47b);
+} */
