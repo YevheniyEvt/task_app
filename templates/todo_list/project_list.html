@@ -9,16 +9,22 @@
 
 {% include 'navbar.html' %}
 
-<main class="container">
+<main class="container ">
 {% for project in projects %}
-
+  {% if project.name == ''  %}
+  {% include 'todo_list/empty_project_form.html' with project=project %}
+  {% else %}
   {% include 'todo_list/project_form.html' with project=project %}
   {% include 'todo_list/task_form.html' with project_id=project.id %}
+  {% endif %}
 
-  <div class="p-3 bg-body custom-rounded  shadow-sm">
-    {% for task in project.tasks.all %}
+
+
+  <div class="p-3 bg-body rounded-top custom-rounded shadow-sm">
+  {% for task in project.tasks.all %}
     {% include 'todo_list/task_list.html' with task=task %}
-    {% endfor %}
+  {% endfor %}
+
   </div>
   
 {% endfor %}
