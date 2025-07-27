@@ -10,7 +10,7 @@ class Project(models.Model):
         related_name="projects",
         on_delete=models.CASCADE,
         )
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, default='', blank=True)
 
     def __str__(self):
         return f"Project: {self.name}"

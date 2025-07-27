@@ -69,6 +69,24 @@ class ProjectCreateViewTestCase(TestCase):
         self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
         self.assertIsNotNone(Project.objects.filter(name='test text').first())
 
+    def test_create_new_empty_project(self):
+        Project.objects.create(name='', owner=self.user)
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse('projects:projects_create'),
+            )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
+        self.assertEqual(1, Project.objects.filter(name='').count())
+    
+    def test_create_new_empty_project_empty_already_exist(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse('projects:projects_create'),
+            )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('projects:projects_list'), target_status_code=200)
+        self.assertIsNotNone(Project.objects.filter(name='').first())
 
 class ProjectUpdateViewTestCase(TestCase):
     """Test update project"""
