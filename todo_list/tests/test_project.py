@@ -52,6 +52,7 @@ class ProjectCreateViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = create_user(1)
+        cls.headers = [{"HX-Request": 'true'}, {}]
 
     def test_create_project_not_login_user(self):
         response = self.client.post(
@@ -67,18 +68,40 @@ class ProjectCreateViewTestCase(TestCase):
 
     def test_create_project_login_user(self):
         self.client.force_login(self.user)
-        response = self.client.post(
-            reverse('projects:projects_create'),
-            data={"name": "test text"},
-            )
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(Project.objects.filter(name='test text').first())
-        self.assertTemplateUsed(response, 'todo_list/project.html')
+        for header in self.headers:
+            with self.subTest(header=header):
+                response = self.client.post(
+                    reverse('projects:projects_create'),
+                    data={"name": "test text"},
+                    headers=header
+                    )
+                self.assertIsNotNone(Project.objects.filter(name='test text').first())
+                if header:
+                    self.assertEqual(response.status_code, 200)
+                    self.assertTemplateUsed(response, 'todo_list/project.html')
+                else:
+                    self.assertRedirects(
+                        response,
+                        reverse('projects:projects_list'),
+                        target_status_code=200,
+                        )
         
     def test_get_create_project_login_user(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse('projects:projects_create'))    
-        self.assertTemplateUsed(response, "partials/empty_project_form.html")
+        for header in self.headers:
+            with self.subTest(header=header):
+                response = self.client.get(
+                    reverse('projects:projects_create'),
+                    headers=header,
+                    ) 
+                if header:      
+                    self.assertTemplateUsed(response, "partials/empty_project_form.html")
+                else:
+                    self.assertRedirects(
+                        response,
+                        reverse('projects:projects_list'),
+                        target_status_code=200,
+                        )
 
 
 class ProjectUpdateViewTestCase(TestCase):
@@ -90,6 +113,7 @@ class ProjectUpdateViewTestCase(TestCase):
         user2 = create_user(2)
         cls.project = create_project(1, cls.user)
         cls.project2 = create_project(2, user2)
+        cls.headers = [{"HX-Request": 'true'}, {}]
 
     def test_update_project_not_login_user(self):
         response = self.client.post(
@@ -119,16 +143,47 @@ class ProjectUpdateViewTestCase(TestCase):
 
     def test_update_project_owner_user(self):
         self.client.force_login(self.user)
-        response = self.client.post(
-            reverse('projects:projects_update',
-                    kwargs={"pk": self.project.id},
-                    ),
-            data={"name": "updated text"},
-            )
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(Project.objects.filter(name='updated text').first())
-        self.assertIsNone(Project.objects.filter(name=self.project.name).first())
-        self.assertTemplateUsed(response, 'todo_list/project_form.html')
+        for i, header in enumerate(self.headers):
+            name = f"text #{i}"
+            with self.subTest(header=header, name=name):
+                response = self.client.post(
+                    reverse('projects:projects_update',
+                            kwargs={"pk": self.project.id},
+                            ),
+                    data={"name": name},
+                    headers=header,
+                    )
+                self.assertIsNotNone(Project.objects.filter(name=name).first())
+                self.assertIsNone(Project.objects.filter(name=self.project.name).first())
+                if header:
+                    self.assertEqual(response.status_code, 200)
+                    self.assertTemplateUsed(response, 'todo_list/project_form.html')
+                else:
+                    self.assertRedirects(
+                        response,
+                        reverse('projects:projects_list'),
+                        target_status_code=200,
+                        )
+
+
+    def test_get_update_project_owner_user(self):
+        self.client.force_login(self.user)
+        for header in self.headers:
+            with self.subTest(header=header):
+                response = self.client.get(
+                    reverse('projects:projects_update',
+                            kwargs={"pk": self.project.id},
+                            ),
+                    headers=header,
+                    ) 
+                if header:      
+                    self.assertTemplateUsed(response, 'todo_list/project_form.html')
+                else:
+                    self.assertRedirects(
+                        response,
+                        reverse('projects:projects_list'),
+                        target_status_code=200,
+                        )
 
 
 class ProjectDeleteViewTestCase(TestCase):
@@ -140,9 +195,14 @@ class ProjectDeleteViewTestCase(TestCase):
         user2 = create_user(2)
         cls.project = create_project(1, cls.user)
         cls.project2 = create_project(2, user2)
+        cls.headers = [{"HX-Request": 'true'}, {}]
 
     def test_delete_project_not_login_user(self):
-        response = self.client.post(reverse('projects:projects_delete',kwargs={"pk": self.project.id}))
+        response = self.client.post(
+            reverse('projects:projects_delete',
+                    kwargs={"pk": self.project.id},
+                    ),
+            )
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response,
@@ -152,12 +212,32 @@ class ProjectDeleteViewTestCase(TestCase):
     
     def test_delete_project_not_owner_user(self):
         self.client.force_login(self.user)
-        response = self.client.post(reverse('projects:projects_delete',kwargs={"pk": self.project2.id}))
+        response = self.client.post(
+            reverse('projects:projects_delete',
+                    kwargs={"pk": self.project2.id},
+                    ),
+            )
         self.assertEqual(response.status_code, 404)
         self.assertIsNotNone(Project.objects.filter(name=self.project2.name).first())
 
     def test_delete_project_owner_user(self):
         self.client.force_login(self.user)
-        response = self.client.post(reverse('projects:projects_delete',kwargs={"pk": self.project.id}))
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNone(Project.objects.filter(name=self.project.name).first())
+        for i, header in enumerate(self.headers):
+            project = create_project(i, self.user)
+            with self.subTest(header=header, project=project):
+                response = self.client.post(
+                    reverse('projects:projects_delete',
+                            kwargs={"pk": project.id},
+                            ),
+                    headers=header,
+                    )
+                self.assertIsNone(Project.objects.filter(id=project.id).first())
+                if header:
+                    self.assertEqual(response.status_code, 200)
+                else:
+                    self.assertRedirects(
+                        response,
+                        reverse('projects:projects_list'),
+                        target_status_code=200,
+                        )
+                

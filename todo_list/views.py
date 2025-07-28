@@ -1,10 +1,10 @@
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed
 from django.db.models import F
+
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 
 from .models import Project, Task
 from .forms import TaskForm
@@ -29,11 +29,20 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
     success_url = reverse_lazy('projects:projects_list')
     template_name = "partials/empty_project_form.html"
-
+    
+    def get(self, request, *args, **kwargs):
+        if request.headers.get("HX-Request") == "true":
+            return super().get(request, *args, **kwargs)
+        else:
+            return redirect('projects:projects_list')
+        
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        self.object = form.save()
-        return render(self.request, 'todo_list/project.html', self.get_context_data())
+        if self.request.headers.get("HX-Request") == "true":
+            self.object = form.save()
+            return render(self.request, 'todo_list/project.html', self.get_context_data())
+        else:
+            return super().form_valid(form)
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
@@ -46,10 +55,19 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         queryset = super().get_queryset()
         return queryset.filter(owner=self.request.user)
     
+    def get(self, request, *args, **kwargs):
+        if request.headers.get("HX-Request") == "true":
+            return super().get(request, *args, **kwargs)
+        else:
+            return redirect('projects:projects_list')
+    
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        self.object = form.save()
-        return render(self.request, self.get_template_names(), self.get_context_data())
+        if self.request.headers.get("HX-Request") == "true":
+            self.object = form.save()
+            return render(self.request, self.get_template_names(), self.get_context_data())
+        else:
+            return super().form_valid(form)
 
 
 class ProjectDeleteView(LoginRequiredMixin, DeleteView):
@@ -63,21 +81,43 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponse(status=200)
+        if self.request.headers.get("HX-Request") == "true":
+            return HttpResponse(status=200)
+        else:
+            success_url = self.get_success_url()
+            return redirect(success_url)
     
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     fields = ['content']
     model = Task
-    http_method_names = ['post']
     success_url = reverse_lazy('projects:projects_list')
     template_name = "todo_list/task_list.html"
-
+    
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.project = Project.objects.filter(
+            pk=self.kwargs['project_id'],
+            ).first()
+    
+    def get(self, request, *args, **kwargs):
+        if self.project.owner != self.request.user:
+            return HttpResponseNotFound()
+        if request.headers.get("HX-Request") == "true":
+            context = {"project": self.project}
+            return render(self.request, "todo_list/task_form.html", context)
+        else:
+            return redirect('projects:projects_list')
+    
     def form_valid(self, form):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        form.instance.project = project
-        self.object = form.save()
-        return render(self.request, self.get_template_names(), self.get_context_data())
+        if self.project.owner != self.request.user:
+            return HttpResponseNotFound()
+        form.instance.project = self.project
+        if self.request.headers.get("HX-Request") == "true":
+            self.object = form.save()
+            return render(self.request, "todo_list/task_list.html", self.get_context_data())
+        else:
+            return super().form_valid(form)
     
     
 class BaseUpdateView(LoginRequiredMixin, UpdateView):
@@ -102,9 +142,12 @@ class TaskCompletedUpdateView(BaseUpdateView):
     fields = ['completed']
     
     def form_valid(self, form):
-        task = self.get_object()
-        Task.objects.filter(id=task.id).update(completed=~F("completed"))
-        return HttpResponse(status=200)
+        if self.request.headers.get("HX-Request") == "true":
+            task = self.get_object()
+            Task.objects.filter(id=task.id).update(completed=~F("completed"))
+            return HttpResponse(status=200)
+        else:
+            return HttpResponseNotAllowed(permitted_methods='hx-post')
     
 
 class TaskPriorityUpdateView(BaseUpdateView):
@@ -113,11 +156,14 @@ class TaskPriorityUpdateView(BaseUpdateView):
     template_name = 'todo_list/project.html'
 
     def form_valid(self, form):
-        task = self.get_object()
-        task.priority = F('priority') + form.cleaned_data['priority']
-        task.save()
-        return render(self.request, self.get_template_names(), self.get_context_data())
-    
+        if self.request.headers.get("HX-Request") == "true":
+            task = self.get_object()
+            task.priority = F('priority') + form.cleaned_data['priority']
+            task.save()
+            return render(self.request, self.get_template_names(), self.get_context_data())
+        else:
+            return HttpResponseNotAllowed(permitted_methods='hx-post')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['project'] = self.get_object().project
@@ -132,3 +178,11 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(project__owner=self.request.user)
+    
+    def form_valid(self, form):
+        super().form_valid(form)
+        if self.request.headers.get("HX-Request") == "true":
+            return HttpResponse(status=200)
+        else:
+            success_url = self.get_success_url()
+            return redirect(success_url)

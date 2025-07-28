@@ -18,7 +18,7 @@ def create_user(number: int) ->User:
 def create_project(number: int, user: User) ->Project:
     """Create project for test. Number is just for creating unique one"""
 
-    return Project.objects.create(owner=user, name=f'Test project1{number}')
+    return Project.objects.create(owner=user, name=f'Test project{number}')
 
 def create_task(number: int, project: Project) ->Task:
     """Create task for test. Number is just for creating unique one"""
