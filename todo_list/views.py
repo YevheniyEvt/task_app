@@ -2,12 +2,12 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed
 from django.db.models import F
-
+from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
 from .models import Project, Task
-from .forms import SmallTaskForm, TaskForm
+from .forms import PriorityTaskForm, TaskForm, ProjectForm
 
 
 class ProjectListView(LoginRequiredMixin, ListView):
@@ -20,12 +20,11 @@ class ProjectListView(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = SmallTaskForm()
         return context
 
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
-    fields = ['name']
+    form_class = ProjectForm
     model = Project
     success_url = reverse_lazy('projects:projects_list')
     template_name = "todo_list/partials/project_form.html"
@@ -46,7 +45,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
-    fields = ['name']
+    form_class = ProjectForm
     model = Project
     success_url = reverse_lazy('projects:projects_list')
     template_name = 'todo_list/project_title.html'
@@ -63,7 +62,9 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
                 ).first()
             if project is None:
                 return HttpResponseNotFound()
-            context = {"project": project}
+            context = {"project": project,
+                       "form": ProjectForm()
+                       }
             return render(self.request, 'todo_list/partials/project_update.html', context)
         else:
             return redirect('projects:projects_list')
@@ -188,13 +189,14 @@ class TaskCompletedUpdateView(BaseUpdateView):
 
 class TaskPriorityUpdateView(BaseUpdateView):
     http_method_names = ['post']
-    fields = ['priority']
-    template_name = 'todo_list/project.html'
+    form_class = PriorityTaskForm
+    template_name = "todo_list/task_list.html"
 
     def form_valid(self, form):
+        
         if self.request.headers.get("HX-Request") == "true":
             task = self.get_object()
-            task.priority = F('priority') + form.cleaned_data['priority']
+            task.priority += form.cleaned_data['priority']
             task.save()
             return render(self.request, self.get_template_names(), self.get_context_data())
         else:
