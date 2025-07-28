@@ -63,7 +63,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             if project is None:
                 return HttpResponseNotFound()
             context = {"project": project,
-                       "form": ProjectForm()
+                       "form": ProjectForm(instance=project)
                        }
             return render(self.request, 'todo_list/partials/project_update.html', context)
         else:

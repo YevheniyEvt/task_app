@@ -302,7 +302,7 @@ class TaskPriorityUpdateViewTestCase(TestCase):
                 if header:
                     self.assertEqual(response.status_code, 200)
                     self.assertEqual(self.task.priority, 1)
-                    self.assertTemplateUsed(response, 'todo_list/project.html')
+                    self.assertTemplateUsed(response, 'todo_list/task_list.html')
                 else:
                     self.assertEqual(response.status_code, 405)
 

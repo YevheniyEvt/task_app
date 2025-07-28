@@ -6,7 +6,7 @@
         hx-swap="outerHTML">
       {%csrf_token%}
       <div class="input-group ">
-        <input type="text" class="form-control" placeholder="Your new project name" name="name" autocomplete="off" required value="{{project.name}}">
+        {{form.name}}
         <button type="submit" class="btn btn-success">Update</button>
       </div>
   </form>
