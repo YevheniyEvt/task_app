@@ -1,0 +1,12 @@
+<form class="card p-2 bg-secondary p-2 text-dark rounded-0" id="update-task-{{task.id}}"
+    hx-post="{% url 'projects:task_update' task.id %}"
+    hx-target="#update-task-{{task.id}}"
+    hx-swap="outerHTML">
+    {%csrf_token%}
+    <div class="input-group">
+        {{form.content}}
+        {{form.deadline}}
+        <button type="submit" class="btn btn-success " >Update</button>
+    </div>
+</form>
+

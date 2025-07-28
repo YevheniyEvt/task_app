@@ -1,16 +1,14 @@
-  {% load static %}
-
 <div class="d-flex align-items-center p-3 my-5 mb-0 text-white bg-blue shadow-sm" id="project-update-{{project.id}}">
-<i class="bi bi-calendar2-check fs-3 me-4"></i>
-<form class="card p-2 bg-grey rounded-4 col"
-      hx-post="{% url 'projects:projects_update' project.id %}"
-      hx-target="#project-update-{{project.id}}"
-      hx-swap="outerHTML">
-    {%csrf_token%}
-    <div class="input-group ">
-    <input type="text" class="form-control" placeholder="Your new project name" name="name" autocomplete="off" required value="{{project.name}}">
-    <button type="submit" class="btn btn-success">Update</button>
-    </div>
-</form>
+  <i class="bi bi-calendar2-check fs-3 me-4"></i>
+  <form class="card p-2 bg-grey rounded-4 col"
+        hx-post="{% url 'projects:projects_update' project.id %}"
+        hx-target="#project-update-{{project.id}}"
+        hx-swap="outerHTML">
+      {%csrf_token%}
+      <div class="input-group ">
+        <input type="text" class="form-control" placeholder="Your new project name" name="name" autocomplete="off" required value="{{project.name}}">
+        <button type="submit" class="btn btn-success">Update</button>
+      </div>
+  </form>
 </div>
 

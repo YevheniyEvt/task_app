@@ -76,7 +76,7 @@ class TaskCreateViewTestCase(TestCase):
                 self.assertIsNotNone(Task.objects.filter(content=content).first())
                 if header:
                     self.assertEqual(response.status_code, 200)
-                    self.assertTemplateUsed(response, "todo_list/task_list.html")
+                    self.assertTemplateUsed(response, "partials/new_task.html")
                 else:
                     self.assertRedirects(
                         response,
@@ -95,7 +95,7 @@ class TaskCreateViewTestCase(TestCase):
                     headers=header,
                     ) 
                 if header:      
-                    self.assertTemplateUsed(response, "todo_list/task_form.html")
+                    self.assertTemplateUsed(response, "partials/full_task_form.html")
                 else:
                     self.assertRedirects(
                         response,
@@ -110,11 +110,12 @@ class TaskUpdateViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = create_user(1)
-        project = create_project(1, cls.user)
-        cls.task = create_task(1, project)
+        cls.project = create_project(1, cls.user)
+        cls.task = create_task(1, cls.project)
         user2 = create_user(2)
         project2 = create_project(2, user2)
         cls.task2 = create_task(2, project2)
+        cls.headers = [{"HX-Request": 'true'}, {}]
 
     def test_update_task_not_login_user(self):
         response = self.client.post(
@@ -144,16 +145,50 @@ class TaskUpdateViewTestCase(TestCase):
 
     def test_update_task_owner_user(self):
         self.client.force_login(self.user)
-        response = self.client.post(
-            reverse('projects:task_update',
-                    kwargs={"pk": self.task.id}
-                    ),
-            data={"content": "updated text"},
-            )
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(Task.objects.filter(content='updated text').first())
-        self.assertIsNone(Task.objects.filter(content=self.task.content).first())
-
+        for i, header in enumerate(self.headers):
+            task = create_task(i, self.project)
+            with self.subTest(header=header, task=task):
+                content = f"updated text #{i}"
+                response = self.client.post(
+                    reverse('projects:task_update',
+                            kwargs={"pk": task.id}
+                            ),
+                    data={"content": content,
+                          "deadline": task.deadline},
+                    headers=header,
+                    )
+                self.assertEqual(Task.objects.get(id=task.id).content, content)
+                if header:
+                    self.assertEqual(response.status_code, 200)
+                    self.assertTemplateUsed(response, 'todo_list/task_list.html')
+                else:
+                    self.assertEqual(response.status_code, 302)
+                    self.assertRedirects(
+                        response,
+                        reverse('projects:projects_list'),
+                        target_status_code=200,
+                        )
+                
+    def test_get_update_task_owner_user(self):
+        self.client.force_login(self.user)
+        for header in self.headers:
+            with self.subTest(header=header):
+                response = self.client.get(
+                    reverse('projects:task_update',
+                            kwargs={"pk": self.task.id},
+                            ),
+                    headers=header,
+                    ) 
+                if header:
+                    self.assertEqual(response.status_code, 200)      
+                    self.assertTemplateUsed(response, 'partials/task_update_form.html')
+                else:
+                    self.assertEqual(response.status_code, 302)
+                    self.assertRedirects(
+                        response,
+                        reverse('projects:projects_list'),
+                        target_status_code=200,
+                        )
 
 class TaskCompletedUpdateViewTestCase(TestCase):
     """Test update complete task"""

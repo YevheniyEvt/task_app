@@ -1,4 +1,3 @@
-
 <div id="project-{{project.id}}">
   {% include 'todo_list/project_form.html' with project=project %}
   {% include 'todo_list/task_form.html' with project=project %}
@@ -7,7 +6,6 @@
       {% include 'todo_list/task_list.html' with task=task %}
     {% endfor %}
   </div>
-
 </div>
 
   

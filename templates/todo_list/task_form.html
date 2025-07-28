@@ -1,13 +1,20 @@
-{% load static %}
-
-<form class="card p-2 bg-secondary p-2 text-dark rounded-0"
+<form class="card p-2 bg-secondary p-2 text-dark rounded-0" id="task-body-{{project.id}}"
     hx-post="{% url 'projects:task_create' project.id %}"
     hx-target="#task-body-{{project.id}}"
-    hx-swap="afterbegin">
+    hx-swap="outerHTML">
     {%csrf_token%}
     <div class="input-group">
-    <button type="button" class="btn btn-success rounded-circle me-2"><i class="bi bi-plus-circle-fill"></i></button>
-    <input type="text" class="form-control " placeholder="Create quick task with a deadline tomorrow" name="content" autocomplete="off" required>
-    <button type="submit" class="btn btn-success " >Quick task</button>
+        <button
+            hx-get="{% url 'projects:task_create' project.id %}"
+            type="button" class="btn btn-success rounded-circle me-2">
+            <i class="bi bi-plus-circle-fill"></i>
+        </button>
+        <input 
+            type="text" 
+            class="form-control " 
+            placeholder="Start typing to create new task" 
+            autocomplete="off"
+            hx-get="{% url 'projects:task_create' project.id %}"
+            hx-trigger="keyup">
     </div>
 </form>

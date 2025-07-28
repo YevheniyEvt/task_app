@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
 from .models import Project, Task
-from .forms import TaskForm
+from .forms import SmallTaskForm, TaskForm
 
 
 class ProjectListView(LoginRequiredMixin, ListView):
@@ -20,7 +20,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = TaskForm()
+        context['form'] = SmallTaskForm()
         return context
 
 
@@ -107,11 +107,16 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
             ).first()
     
     def get(self, request, *args, **kwargs):
-        if self.project.owner != self.request.user:
+        if (self.project is None or
+             self.project.owner != self.request.user
+             ):
             return HttpResponseNotFound()
         if request.headers.get("HX-Request") == "true":
-            context = {"project": self.project}
-            return render(self.request, "todo_list/task_form.html", context)
+            context = {
+                "project": self.project,
+                'form': TaskForm(),
+            }
+            return render(self.request, "partials/full_task_form.html", context)
         else:
             return redirect('projects:projects_list')
     
@@ -121,7 +126,9 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         form.instance.project = self.project
         if self.request.headers.get("HX-Request") == "true":
             self.object = form.save()
-            return render(self.request, "todo_list/task_list.html", self.get_context_data())
+            context = self.get_context_data()
+            context['project'] = self.project
+            return render(self.request, "partials/new_task.html", context)
         else:
             return super().form_valid(form)
     
@@ -135,12 +142,33 @@ class BaseUpdateView(LoginRequiredMixin, UpdateView):
     
     
 class TaskUpdateView(BaseUpdateView):
-    fields = ['content']
+    model = Task
+    form_class = TaskForm
     success_url = reverse_lazy('projects:projects_list')
+    template_name = "todo_list/task_list.html"
 
+    def get(self, request, *args, **kwargs):
+        task = Task.objects.filter(
+            pk=self.kwargs['pk'],
+            project__owner=self.request.user
+            ).first()
+        if task is None:
+            return HttpResponseNotFound()
+        if request.headers.get("HX-Request") == "true":
+            context = {
+                'task': task,
+                'form': TaskForm(instance=task),
+            }
+            return render(self.request, "partials/task_update_form.html", context)
+        else:
+            return redirect('projects:projects_list')
+        
     def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=200)
+        if self.request.headers.get("HX-Request") == "true":
+            self.object = form.save()
+            return render(self.request, self.get_template_names(), self.get_context_data())
+        else:
+            return super().form_valid(form)
     
 
 class TaskCompletedUpdateView(BaseUpdateView):

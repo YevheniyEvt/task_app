@@ -1,16 +1,14 @@
-{% load static %}
-
 <div class="d-flex align-items-center p-3 my-5 mb-3 text-white bg-blue shadow-sm" id="project-create-{{project.id}}">
-<i class="bi bi-calendar2-check fs-3 me-4"></i>
-<form class="card p-2 bg-grey rounded-4 col"
-      hx-post="{% url 'projects:projects_create' %}"
-      hx-target="#project-create-{{project.id}}"
-      hx-swap="outerHTML">
-    {%csrf_token%}
-    <div class="input-group ">
-    <input type="text" class="form-control" placeholder="Your new project name" name="name" autocomplete="off" required>
-    <button type="submit" class="btn btn-success">Create</button>
-    </div>
-</form>
+  <i class="bi bi-calendar2-check fs-3 me-4"></i>
+  <form class="card p-2 bg-grey rounded-4 col"
+        hx-post="{% url 'projects:projects_create' %}"
+        hx-target="#project-create-{{project.id}}"
+        hx-swap="outerHTML">
+      {%csrf_token%}
+      <div class="input-group ">
+      <input type="text" class="form-control" placeholder="Your new project name" name="name" autocomplete="off" required autofocus>
+      <button type="submit" class="btn btn-success">Create</button>
+      </div>
+  </form>
 </div>
 

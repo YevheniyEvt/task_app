@@ -1,0 +1,80 @@
+<form class="card p-2 bg-secondary p-2 text-dark rounded-0" id="task-body-{{project.id}}"
+    hx-post="{% url 'projects:task_create' project.id %}"
+    hx-target="#task-body-{{project.id}}"
+    hx-swap="outerHTML">
+    {%csrf_token%}
+    <div class="input-group">
+        <button
+            hx-get="{% url 'projects:task_create' project.id %}"
+            type="button" class="btn btn-success rounded-circle me-2">
+            <i class="bi bi-plus-circle-fill"></i>
+        </button>
+        <input 
+            autofocus
+            type="text" 
+            class="form-control " 
+            placeholder="Start typing to create new task" 
+            autocomplete="off"
+            hx-get="{% url 'projects:task_create' project.id %}"
+            hx-trigger="keyup">
+    </div>
+</form>
+<div class="p-3 bg-body shadow-sm">
+    <div id="task-{{ task.id }}" class="d-flex justify-content-between align-items-center p-3 text-muted pt-3 border-bottom" id="task-{{task.id}}">
+        <div class="form-check  me-3">
+            <form >
+                {% csrf_token %}
+                <input class="form-check-input" type="checkbox" value="completed" name="completed" id="{{task.id}}" {% if task.completed %} checked {% endif %}
+                    hx-post="{% url 'projects:task_completed' task.id %}">
+            </form>
+            
+            <label class="form-check-label d-flex" for="{{task.id}}">
+                {{task.content}}
+            </label>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="d-grid  gap-0 me-5">
+                <p class="me-4 d-flex justify-content-between align-items-center ">{{task.deadline}}</p>
+            </div>
+            <div class="d-grid  gap-0 me-2">
+                <form class="form-display"
+                    hx-post="{% url 'projects:task_priority' task.id %}"
+                    hx-target="#project-{{project.id}}"
+                    hx-swap="outerHTML">
+                    <input type="number" name="priority" value="1" hidden>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link p-0 m-0 align-baseline ">
+                        <i class="bi bi-arrow-bar-up fc-5"></i>
+                    </button>
+                </form>
+                <form class="form-display"
+                    hx-post="{% url 'projects:task_priority' task.id %}"
+                    hx-target="#project-{{project.id}}"
+                    hx-swap="outerHTML">
+                    <input type="number" name="priority" value="-1" hidden>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link p-0 m-0 align-baseline ">
+                        <i class="bi bi-arrow-bar-down fc-5"></i>
+                    </button>
+                </form>
+            </div>
+            <form class="form-display"
+                hx-post="{% url 'projects:task_delete' task.id %}"
+                hx-target="#task-{{task.id}}"
+                hx-swap="delete">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link p-0 m-0 align-baseline me-2">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </form>
+
+            <form action="" method="post" class="form-display">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link p-0 m-0 align-baseline">
+                    <i class="bi bi-pencil"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+

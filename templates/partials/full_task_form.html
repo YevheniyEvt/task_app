@@ -1,0 +1,19 @@
+<form class="card p-2 bg-secondary p-2 text-dark rounded-0" id="form-task-body-{{project.id}}"
+    hx-post="{% url 'projects:task_create' project.id %}"
+    hx-target="#task-body-{{project.id}}"
+    hx-swap="afterbegin">
+
+    {%csrf_token%}
+    <div class="input-group">
+
+    {{form.content}}
+    {{form.deadline}}
+
+    <button id="full-task-{{project.id}}"
+    hx-post="{% url 'projects:task_create' project.id %}"
+    hx-target="#form-task-body-{{project.id}}"
+    hx-swap="outerHTML"
+     type="submit" class="btn btn-success " >Create task</button>
+    </div>
+</form>
+

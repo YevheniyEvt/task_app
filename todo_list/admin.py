@@ -10,5 +10,5 @@ class TaskInLine(admin.TabularInline):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     inlines = [TaskInLine]
-    list_display  = ["name"]
+    list_display  = ["name", 'id']
 
