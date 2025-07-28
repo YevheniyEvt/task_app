@@ -6,7 +6,7 @@
         hx-swap="outerHTML">
       {%csrf_token%}
       <div class="input-group ">
-        {{form.name}}
+      <input type="text" class="form-control" placeholder="Your new project name" name="name" autocomplete="off" required autofocus>
       <button type="submit" class="btn btn-success">Create</button>
       </div>
   </form>
