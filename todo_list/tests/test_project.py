@@ -33,7 +33,7 @@ class ProjectListViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'todo_list/project_list.html')
         self.assertTemplateUsed(response, 'base.html')
         self.assertTemplateUsed(response, 'navbar.html')
-        self.assertTemplateUsed(response, 'todo_list/project_form.html')
+        self.assertTemplateUsed(response, 'todo_list/project_title.html')
         self.assertTemplateUsed(response, 'todo_list/task_form.html')
         
 
@@ -95,7 +95,7 @@ class ProjectCreateViewTestCase(TestCase):
                     headers=header,
                     ) 
                 if header:      
-                    self.assertTemplateUsed(response, "partials/empty_project_form.html")
+                    self.assertTemplateUsed(response, "todo_list/partials/project_form.html")
                 else:
                     self.assertRedirects(
                         response,
@@ -158,7 +158,7 @@ class ProjectUpdateViewTestCase(TestCase):
                 self.assertEqual(Project.objects.get(id=project.id).name, name)
                 if header:
                     self.assertEqual(response.status_code, 200)
-                    self.assertTemplateUsed(response, 'todo_list/project_form.html')
+                    self.assertTemplateUsed(response, 'todo_list/project_title.html')
                 else:
                     self.assertRedirects(
                         response,
@@ -178,7 +178,7 @@ class ProjectUpdateViewTestCase(TestCase):
                     headers=header,
                     ) 
                 if header:      
-                    self.assertTemplateUsed(response, 'partials/project_update.html')
+                    self.assertTemplateUsed(response, 'todo_list/partials/project_update.html')
                 else:
                     self.assertRedirects(
                         response,

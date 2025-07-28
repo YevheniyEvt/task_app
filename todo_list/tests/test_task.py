@@ -76,7 +76,8 @@ class TaskCreateViewTestCase(TestCase):
                 self.assertIsNotNone(Task.objects.filter(content=content).first())
                 if header:
                     self.assertEqual(response.status_code, 200)
-                    self.assertTemplateUsed(response, "partials/new_task.html")
+                    self.assertTemplateUsed(response, "todo_list/task_list.html")
+                    self.assertTemplateUsed(response, "todo_list/task_form.html")
                 else:
                     self.assertRedirects(
                         response,
@@ -95,7 +96,7 @@ class TaskCreateViewTestCase(TestCase):
                     headers=header,
                     ) 
                 if header:      
-                    self.assertTemplateUsed(response, "partials/full_task_form.html")
+                    self.assertTemplateUsed(response, "todo_list/partials/full_task_form.html")
                 else:
                     self.assertRedirects(
                         response,
@@ -160,7 +161,7 @@ class TaskUpdateViewTestCase(TestCase):
                 self.assertEqual(Task.objects.get(id=task.id).content, content)
                 if header:
                     self.assertEqual(response.status_code, 200)
-                    self.assertTemplateUsed(response, 'todo_list/task_list.html')
+                    self.assertTemplateUsed(response, 'todo_list/partials/one_task.html')
                 else:
                     self.assertEqual(response.status_code, 302)
                     self.assertRedirects(
@@ -181,7 +182,7 @@ class TaskUpdateViewTestCase(TestCase):
                     ) 
                 if header:
                     self.assertEqual(response.status_code, 200)      
-                    self.assertTemplateUsed(response, 'partials/task_update_form.html')
+                    self.assertTemplateUsed(response, 'todo_list/partials/task_update_form.html')
                 else:
                     self.assertEqual(response.status_code, 302)
                     self.assertRedirects(

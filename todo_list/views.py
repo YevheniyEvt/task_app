@@ -28,7 +28,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
     fields = ['name']
     model = Project
     success_url = reverse_lazy('projects:projects_list')
-    template_name = "partials/empty_project_form.html"
+    template_name = "todo_list/partials/project_form.html"
     
     def get(self, request, *args, **kwargs):
         if request.headers.get("HX-Request") == "true":
@@ -49,7 +49,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['name']
     model = Project
     success_url = reverse_lazy('projects:projects_list')
-    template_name = 'todo_list/project_form.html'
+    template_name = 'todo_list/project_title.html'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -64,7 +64,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             if project is None:
                 return HttpResponseNotFound()
             context = {"project": project}
-            return render(self.request, 'partials/project_update.html', context)
+            return render(self.request, 'todo_list/partials/project_update.html', context)
         else:
             return redirect('projects:projects_list')
     
@@ -116,7 +116,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
                 "project": self.project,
                 'form': TaskForm(),
             }
-            return render(self.request, "partials/full_task_form.html", context)
+            return render(self.request, "todo_list/partials/full_task_form.html", context)
         else:
             return redirect('projects:projects_list')
     
@@ -159,7 +159,7 @@ class TaskUpdateView(BaseUpdateView):
                 'task': task,
                 'form': TaskForm(instance=task),
             }
-            return render(self.request, "partials/task_update_form.html", context)
+            return render(self.request, "todo_list/partials/task_update_form.html", context)
         else:
             return redirect('projects:projects_list')
         
@@ -168,7 +168,7 @@ class TaskUpdateView(BaseUpdateView):
             self.object = form.save()
             context = self.get_context_data()
             context['project'] = self.object.project
-            return render(self.request, 'partials/one_task.html', context)
+            return render(self.request, 'todo_list/partials/one_task.html', context)
         else:
             return super().form_valid(form)
     
