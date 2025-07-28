@@ -5,7 +5,6 @@
 <form class="card p-2 bg-grey rounded-4 col"
       hx-post="{% url 'projects:projects_update' project.id %}"
       hx-target="#project-update-{{project.id}}"
-      hx-trigger="changed"
       hx-swap="outerHTML">
     {%csrf_token%}
     <div class="input-group ">

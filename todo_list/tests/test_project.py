@@ -144,17 +144,18 @@ class ProjectUpdateViewTestCase(TestCase):
     def test_update_project_owner_user(self):
         self.client.force_login(self.user)
         for i, header in enumerate(self.headers):
-            name = f"text #{i}"
-            with self.subTest(header=header, name=name):
+            
+            project = create_project(i, self.user)
+            with self.subTest(header=header, project=project):
+                name = f"text #{i}"
                 response = self.client.post(
                     reverse('projects:projects_update',
-                            kwargs={"pk": self.project.id},
+                            kwargs={"pk": project.id},
                             ),
                     data={"name": name},
                     headers=header,
                     )
-                self.assertIsNotNone(Project.objects.filter(name=name).first())
-                self.assertIsNone(Project.objects.filter(name=self.project.name).first())
+                self.assertEqual(Project.objects.get(id=project.id).name, name)
                 if header:
                     self.assertEqual(response.status_code, 200)
                     self.assertTemplateUsed(response, 'todo_list/project_form.html')
@@ -177,7 +178,7 @@ class ProjectUpdateViewTestCase(TestCase):
                     headers=header,
                     ) 
                 if header:      
-                    self.assertTemplateUsed(response, 'todo_list/project_form.html')
+                    self.assertTemplateUsed(response, 'partials/project_update.html')
                 else:
                     self.assertRedirects(
                         response,

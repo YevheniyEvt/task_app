@@ -57,12 +57,18 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     
     def get(self, request, *args, **kwargs):
         if request.headers.get("HX-Request") == "true":
-            return super().get(request, *args, **kwargs)
+            project = Project.objects.filter(
+                pk=self.kwargs['pk'],
+                owner = self.request.user
+                ).first()
+            if project is None:
+                return HttpResponseNotFound()
+            context = {"project": project}
+            return render(self.request, 'partials/project_update.html', context)
         else:
             return redirect('projects:projects_list')
     
     def form_valid(self, form):
-        form.instance.owner = self.request.user
         if self.request.headers.get("HX-Request") == "true":
             self.object = form.save()
             return render(self.request, self.get_template_names(), self.get_context_data())
