@@ -4,24 +4,22 @@
 {% block head %}
 <link rel="stylesheet" href="{% static 'todo_list/todo_list.css' %}">
 {% endblock head %}
-    
 {% block projects_list %}
 {% include 'navbar.html' %}
 <main class="container" >
   {% for project in projects %}
     {% include 'todo_list/project.html' with project=project %}
   {% endfor %}
-
-<div class="d-flex justify-content-center my-5" id="new-project">
-  <form hx-get="{% url 'projects:projects_create' %}"
-      hx-target="#new-project"
-      hx-swap="beforebegin">
-      {%csrf_token%}
-      <button type="submit" class="btn btn-primary rounded-pill px-4  btn-lg">
-        <i class="bi bi-plus-circle-dotted fs-4 "></i>
-        Add TODO
-    </button>
-  </form>
-</div>
+  <div class="d-flex justify-content-center my-5" id="new-project">
+    <form hx-get="{% url 'projects:projects_create' %}"
+        hx-target="#new-project"
+        hx-swap="beforebegin">
+        {%csrf_token%}
+        <button type="submit" class="btn btn-primary rounded-pill px-4  btn-lg">
+          <i class="bi bi-plus-circle-dotted fs-4 "></i>
+          Add TODO
+      </button>
+    </form>
+  </div>
 </main>
 {%endblock%}

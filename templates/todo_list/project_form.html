@@ -1,5 +1,5 @@
 {% load static %}
-<div class="d-flex justify-content-between p-3 my-5 mb-0 text-white bg-blue  shadow-sm" id="project-old-{{project.id}}">
+<div class="d-flex justify-content-between p-3 my-5 mb-0 text-white bg-blue  shadow-sm" id="project-update-{{project.id}}">
   <div>
     <h1 class="h3 mb-0 text-white lh-1"><i class="bi bi-calendar2-check fs-3 me-4"></i>{{project.name}}</h1>
   </div>
@@ -16,7 +16,7 @@
     </form>
     <form class="form-display"
         hx-get="{% url 'projects:projects_update' project.id %}" 
-        hx-target="#project-old-{{project.id}}"
+        hx-target="#project-update-{{project.id}}"
         hx-swap="outerHTML">
       {% csrf_token %}
       <button type="submit" class="btn btn-link p-0 m-0 align-baseline">

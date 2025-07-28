@@ -128,7 +128,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
             self.object = form.save()
             context = self.get_context_data()
             context['project'] = self.project
-            return render(self.request, "partials/new_task.html", context)
+            return render(self.request, "todo_list/task_list.html", context)
         else:
             return super().form_valid(form)
     
@@ -166,7 +166,9 @@ class TaskUpdateView(BaseUpdateView):
     def form_valid(self, form):
         if self.request.headers.get("HX-Request") == "true":
             self.object = form.save()
-            return render(self.request, self.get_template_names(), self.get_context_data())
+            context = self.get_context_data()
+            context['project'] = self.object.project
+            return render(self.request, 'partials/one_task.html', context)
         else:
             return super().form_valid(form)
     

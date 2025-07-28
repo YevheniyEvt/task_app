@@ -1,6 +1,6 @@
-<form class="card p-2 bg-secondary p-2 text-dark rounded-0" id="task-body-{{project.id}}"
+<form class="card p-2 bg-secondary p-2 text-dark rounded-0" id="task-form-{{project.id}}"
     hx-post="{% url 'projects:task_create' project.id %}"
-    hx-target="#task-body-{{project.id}}"
+    hx-target="#task-form-{{project.id}}"
     hx-swap="outerHTML">
     {%csrf_token%}
     <div class="input-group">
