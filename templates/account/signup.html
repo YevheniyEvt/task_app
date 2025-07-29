@@ -1,0 +1,68 @@
+{% extends 'base.html' %}  
+{% load static %}
+  
+{% block signup %}
+<section class="vh-100 bg-image">
+  <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+          <div class="card" style="border-radius: 15px;">
+            <div class="card-body p-5">
+              <h2 class="text-uppercase text-center mb-5">Create an account</h2>
+
+              <form method="post" action="{% url 'account_signup' %}">
+                {%csrf_token%}
+                <div data-mdb-input-init class="form-outline mb-4">
+                    {% if form.errors.email %}
+                      <input type="email" name="email" id="form3Example3cg" class="form-control  form-control-lg is-invalid" />
+                      {% for error in form.errors.email %}
+                        <label class="form-label" for="form3Example3cg">{{error}}</label>    
+                      {% endfor %}  
+                    {% else %}
+                      <input type="email" name="email" id="form3Example3cg" class="form-control form-control-lg" />
+                      <label class="form-label" for="form3Example3cg">Your Email</label>
+                    {% endif %}
+                </div>
+
+                <div data-mdb-input-init class="form-outline mb-4">
+                    {% if form.errors.password1 %}
+                      <input type="password" name="password1" id="form3Example3cg" class="form-control  form-control-lg is-invalid" autocomplete="off"/>
+                      {% for error in form.errors.password1 %}
+                        <label class="form-label" for="form3Example3cg">{{error}}</label>
+                      {% endfor %}
+                    {% else %}
+                      <input type="password" name="password1" id="form3Example4cg" class="form-control  form-control-lg" autocomplete="off"/>
+                      <label class="form-label" for="form3Example4cg">Password</label>
+                    {% endif %}
+                </div>
+
+                <div data-mdb-input-init class="form-outline mb-4">
+                    {% if form.errors.password2 %}
+                      <input type="password" name="password2" id="form3Example3cg" class="form-control  form-control-lg is-invalid" autocomplete="off"/>
+                      {% for error in form.errors.password2 %}
+                        <label class="form-label" for="form3Example3cg">{{error}}</label> 
+                      {% endfor %}
+                    {% else %}
+                      <input type="password" name="password2" id="form3Example4cdg" class="form-control form-control-lg" autocomplete="off"/>
+                      <label class="form-label" for="form3Example4cdg">Repeat your password</label>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-center">
+                  <button  type="submit" data-mdb-button-init
+                    data-mdb-ripple-init class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Register</button>
+                </div>
+                
+                <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="{% url 'account_login' %}"
+                    class="fw-bold text-body"><u>Login here</u></a></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock signup %}

@@ -5,7 +5,18 @@
 <link rel="stylesheet" href="{% static 'todo_list/todo_list.css' %}">
 {% endblock head %}
 {% block projects_list %}
+
 {% include 'navbar.html' %}
+        {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success d-flex align-items-center" role="alert">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+      <div>
+        {{ message }}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
 <main class="container" >
   {% for project in projects %}
     {% include 'todo_list/project.html' with project=project %}

@@ -56,6 +56,8 @@ body {
 
 .my-custom-gradient {
     background: linear-gradient(to top, #b37709, #f0dfa7);
+    min-height: 100vh;
+
 }
 /* .my-custom-gradient {
     background: linear-gradient(to top, #ff7e5f, #feb47b);

@@ -59,4 +59,3 @@ class ProjectForm(forms.ModelForm):
                 'placeholder': 'Your new project name',
             }),
         }
-
