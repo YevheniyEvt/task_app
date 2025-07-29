@@ -11,12 +11,19 @@
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
       <link rel="stylesheet" href="{% static 'base.css' %}">
-      <title>TODO</title>
+      <link rel="stylesheet" href="{% static 'todo_list/todo_list.css' %}">
+
       {% block head %}
       {% endblock head %}
-  </head>
-  <body class="my-custom-gradient">
+      {% block extra_head %}
+      {% endblock extra_head %}
+      <title>TODO</title>
 
+  </head>
+  <body class="my-custom-gradient" id="base">
+
+    {% block password_change %}
+    {% endblock password_change %}
     {% block signup %}
     {% endblock signup %}
     {% block login %}
@@ -24,6 +31,8 @@
 
     {%block projects_list%}
     {%endblock%}
+
+
     {% block form %}
     {% endblock form %}
     {% block script %}

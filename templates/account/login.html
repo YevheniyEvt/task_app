@@ -1,13 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block head %}
-<link rel="stylesheet" href="{% static 'account/login.css' %}">
-{% endblock head %}
-
 {% block login %}
-<main class="form-signin">
-    {% if messages %}
+<main class="form-signin" id="login">
+<link rel="stylesheet" href="{% static 'account/login.css' %}">
+
+  {% if messages %}
   {% for message in messages %}
   <div class="alert alert-success d-flex align-items-center" role="alert">
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
@@ -17,7 +15,21 @@
   </div>
   {% endfor %}
   {% endif %}
-  <form method="post" action='{{login_url}}'>
+
+      {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+      <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+        <div>
+           {{ error }}
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+  <form
+    hx-post="{{login_url}}"
+    hx-target="#login"
+    hx-swap="outerHTML">
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
     {% csrf_token %}
     <div class="form-floating">
@@ -43,17 +55,18 @@
           <label for="floatingPassword">Password</label>
       {% endif %}
 
-      {% if form.non_field_errors %}
-      <div class="alert alert-danger" role="alert">
-        {% for error in form.non_field_errors %}
-          {{ error }}
-        {% endfor %}
-      </div>
-    {% endif %}
-    </div>
     <button data-mdb-button-init data-mdb-ripple-init
     class="w-100 btn btn-success btn-block btn-lg gradient-custom-4 text-body" type="submit">Sign in</button>
-    <p class="mt-5 mb-3 text-muted">If you don't have account please <a href="{{ signup_url }}">Sign up</a></p>
+    <p class="mt-5 mb-3 text-muted">
+      If you don't have account please
+      <a href="" 
+        hx-get="{{ signup_url }}"
+        hx-target="#login"
+        hx-swap="outerHTML"
+        hx-replace-url="{% url 'account_signup' %}">
+        Sign up
+      </a>
+    </p>
   </form>
 </main>
 {% endblock login %}

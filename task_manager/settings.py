@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.account',
 
     'todo_list.apps.TodoListConfig',
+    'custom_auth.apps.CustomAuthConfig',
 ]
 
 MIDDLEWARE = [
@@ -113,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {
-            "min_length": 8,
+            "min_length": 4,
         },
     }
 ]
