@@ -58,8 +58,8 @@ class RegisterTestCase(TestCase):
             reverse('account_signup'),
             headers={"HX-Request": 'true'},
             data={"email": 'test@mail.com',
-                  "password1": '12345679',
-                  "password2": '12345679',
+                  "password1": 'Qwer12345679',
+                  "password2": 'Qwer12345679',
                   }
             )
         user_exists = User.objects.filter(email='test@mail.com').exists()
@@ -86,9 +86,9 @@ class ChangePasswordTestCase(TestCase):
         response = self.client.post(
             reverse('account_change_password'),
             headers={"HX-Request": 'true'},
-            data={"oldpassword": '12345679',
-                  "password1": '12345679',
-                  "password2": '12345679',
+            data={"oldpassword": 'Qwer12345679Qwer',
+                  "password1": 'Qwer12345679',
+                  "password2": 'Qwer12345679',
                   }
             )
         self.assertEqual(response.status_code, 200)

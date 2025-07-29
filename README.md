@@ -9,6 +9,7 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
+        <li><a href="#clone-repositories">Clone repositories</a></li>
         <li><a href="#run-using-docker">Run using Docker</a></li>
         <li><a href="#run-locally">Run Locally</a></li>
       </ul>
@@ -34,9 +35,21 @@ No distractions, no unnecessary features—just clear, focused task planning and
 
 ## Getting Started
 
-### Run using Docker
+### Clone repositories
+
+First, clone repositories
+
    ```sh
-   docker-compose up
+  git clone https://github.com/YevheniyEvt/task_app.git
+   ```
+
+### Run using Docker
+
+If you have docker you can run app with it
+
+   ```sh
+cd task_app
+docker-compose up
    ```
 
 You should then be able to open your browser on http://localhost:8000 and see sign in page.
@@ -45,12 +58,12 @@ You should then be able to open your browser on http://localhost:8000 and see si
 
 Assuming you use virtualenv, follow these steps to download and run the application in this directory:
 
-   ```sh
-   git clone git@github.com:YevheniyEvt/task_app.git
-   cd task_app
-   .\.venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+  ```sh
+  cd task_app
+  python -m venv .venv
+  .\.venv\Scripts\activate
+  pip install -r requirements.txt
+  ```
 
 Now we need to create the database tables and an admin user. Run the following and when prompted to create a superuser choose yes and follow the instructions:
 
@@ -68,3 +81,9 @@ Finally, run the Django development server:
 You should then be able to open your browser on http://localhost:8000 and see sign in page.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+cd task_app
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
